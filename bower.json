@@ -1,6 +1,6 @@
 {
   "name": "silicon-form",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     "S. Francis"
   ],
@@ -12,7 +12,7 @@
   ],
   "main": "silicon-form.html",
   "license": "MIT",
-  "homepage": "https://github.com/EllipticalElements/silicon-form/",
+  "homepage": "https://github.com/EllipticalElements/silicon-form",
   "ignore": [
     "/.*",
     "/test/",
@@ -40,7 +40,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
     "elliptical-polymer-behaviors": "~1.0.11",
-    "neon-animation": "PolymerElements/neon-animation#~1.0.9"
+    "elliptical-document": "~1.0.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
