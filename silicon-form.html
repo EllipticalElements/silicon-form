@@ -108,9 +108,9 @@
                 value:false
             }
         },
-        
+
         listeners:{
-            
+
         },
 
         ready:function(){
@@ -133,7 +133,7 @@
 
 
         __events: function () {
-            this._event($(document),this.resetEvent,this._onFormReset.bind(this));
+            this._event($(document),this.resetEvent,this._reset.bind(this));
         },
 
         _changeEvents:function(){
@@ -197,7 +197,7 @@
         },
 
         _setService:function(){
-            this._service=this.$service();
+            if(this.service) this._service=this.$service();
         },
 
         _setValidationService:function(){
@@ -221,7 +221,7 @@
             var service=this._service;
             if(!service){
                 if(this.action) this._actionSubmit=true;
-                else throw 'Error: SILICON-FORM requires either an injected service or an action attribute';
+                else console.warn('Warning: SILICON-FORM requires either an injected service or an action attribute');
             }
         },
 
@@ -262,6 +262,7 @@
 
         _submitToService:function(data){
             var service=this._service;
+            if(!service) return;
             var method=this.method;
             service[method](data.body,this._onSubmit.bind(this));
         },
