@@ -211,13 +211,13 @@
 
         _setNotificationService:function(){
             var notifyServiceName=this.notifyService;
-            if(notifyServiceName)this._notifyService=this.service(notifyServiceName);
+            if(notifyServiceName)this._notifyService=this.$service(notifyServiceName);
         },
 
         _setLocationService:function(){
             var locationServiceName=this.locationService;
             if(locationServiceName==='location') this._locationService=window.location;
-            else this._locationService=this.service(locationServiceName);
+            else this._locationService=this.$service(locationServiceName);
 
         },
 
