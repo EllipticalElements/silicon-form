@@ -79,6 +79,10 @@
                 type:String,
                 value:null
             },
+            resetOnSuccess:{
+                type:Boolean,
+                value:false
+            },
             _actionSubmit:{
                 type:Boolean,
                 value:false
@@ -304,10 +308,11 @@
         },
 
         _onSuccess:function(data){
+            if(this.resetOnSuccess) this._reset();
             var service=this._service;
             var redirectUrl=this.redirectUrl;
             if(service.onSuccess){
-                service.onSuccess(data);
+                service.onSuccess(this,data);
             }else{
                 if(redirectUrl){
                     var location_=this._locationService;
@@ -323,7 +328,7 @@
         _onFailure:function(err,data){
             var service=this._service;
             if(service.onFailure){
-                service.onFailure({err:err,data:data});
+                service.onFailure(this,err,data);
             }
         },
 
@@ -333,13 +338,18 @@
         },
 
         _listenerForDelegateCapture:function(){
-            this._event($(document),this.submitEvent,this._tryValidate.bind(this));
+            this._event($(document),this.submitEvent,this._delegatedCaptureHandler.bind(this));
         },
 
         _listenerForInternalCapture:function(){
             var press = this._press();
             var element = this.element;
             this._event(element, press, 'button', this._capturedSubmitActionHandler.bind(this));
+        },
+
+        _delegatedCaptureHandler:function(event,data){
+            if(this.onSubmit) this.onSubmit(data);
+            else this._tryValidate(event,data);
         },
 
         _capturedSubmitActionHandler:function(event){
@@ -358,8 +368,8 @@
             };
 
             if(callback)callback(data);
+            else if(this.onSubmit) this.onSubmit(data);
             else this._tryValidate({},data);
-
         },
 
         _nativeXHRSubmit:function(data){
