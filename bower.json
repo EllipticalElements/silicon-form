@@ -1,10 +1,10 @@
 {
   "name": "silicon-form",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "authors": [
     "S. Francis"
   ],
-  "description": "",
+  "description": "semi-conductive ajax form web component",
   "keywords": [
     "web-component",
     "polymer",
