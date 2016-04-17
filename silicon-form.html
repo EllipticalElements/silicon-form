@@ -63,6 +63,10 @@
                 type:String,
                 value:null
             },
+            redirectDelay:{
+                type: Number,
+                value:750
+            },
             disableChangeEvents:{
                 type:Boolean,
                 value:false
@@ -314,12 +318,13 @@
             if(service.onSuccess){
                 service.onSuccess(this,data);
             }else{
-                if(redirectUrl){
-                    var location_=this._locationService;
+                if(redirectUrl && redirectUrl !==''){
+                    var location_ = this._locationService;
+                    var delay = this.redirectDelay;
                     if(location_.href) {
                         setTimeout(function(){
                             location_.href=redirectUrl;
-                        },300);
+                        },delay);
                     }
                 }
             }

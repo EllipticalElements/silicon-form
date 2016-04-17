@@ -1,7 +1,7 @@
 {
   "name": "silicon-form",
   "description": "semi-conductive ajax form web component",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "author": "S. Francis",
   "license": "MIT",
   "repository": {
