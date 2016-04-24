@@ -39,6 +39,10 @@
                 type:Boolean,
                 value:false
             },
+            overrideHttpErrorMessage:{
+                type:Boolean,
+                value:false
+            },
             captureSubmit:{
                 type:Boolean,
                 value:false
@@ -54,6 +58,10 @@
             failureMessage:{
                 type:String,
                 value:'Error submitting form'
+            },
+            redirectMessage:{
+                type:String,
+                value:'Redirecting...'
             },
             validationError:{
                 type:String,
@@ -139,7 +147,6 @@
             this._setFormEvents();
         },
 
-
         __events: function () {
             this._event($(document),this.resetEvent,this._reset.bind(this));
         },
@@ -153,11 +160,8 @@
 
         _setFormEvents:function(){
             var captureSubmit=this.captureSubmit;
-            if(captureSubmit){
-                this._listenerForInternalCapture();
-            }else{
-                this._listenerForDelegateCapture();
-            }
+            if(captureSubmit) this._listenerForInternalCapture();
+            else this._listenerForDelegateCapture();
         },
 
         _setFormElement: function () {
@@ -169,21 +173,18 @@
         _setName:function(){
             var form=this.element.find('form');
             var name=this.name;
-            if(name){
-                form.attr('name',name);
-            }else{
+            if(name) form.attr('name',name);
+            else{
                 var _name=form.attr('name');
                 if(_name) this.name=_name;
             }
-
         },
 
         _setMethod: function () {
             var form = this._form;
             var method=this.method;
-            if(method){
-                form.attr('method',method);
-            }else{
+            if(method) form.attr('method',method);
+            else{
                 var _method=form.attr('method');
                 if(_method) this.method=_method;
                 else{
@@ -196,9 +197,8 @@
         _setAction: function () {
             var form = this._form;
             var action=this.action;
-            if(action){
-                form.attr('action',action);
-            }else{
+            if(action) form.attr('action',action);
+            else{
                 var _action=form.attr('action');
                 if(_action) this.action=_action;
             }
@@ -215,14 +215,13 @@
 
         _setNotificationService:function(){
             var notifyServiceName=this.notifyService;
-            if(notifyServiceName)this._notifyService=this.$service(notifyServiceName);
+            if(notifyServiceName) this._notifyService=this.$service(notifyServiceName);
         },
 
         _setLocationService:function(){
             var locationServiceName=this.locationService;
             if(locationServiceName==='location') this._locationService=window.location;
             else this._locationService=this.$service(locationServiceName);
-
         },
 
         _setSubmissionType:function(){
@@ -236,9 +235,7 @@
         _getFormDataObject:function(data){
             var formData = new FormData();
             for(var key in data){
-                if(data.hasOwnProperty(key)){
-                    formData.append(key,data[key]);
-                }
+                if(data.hasOwnProperty(key)) formData.append(key,data[key]);
             }
             return formData;
         },
@@ -261,11 +258,8 @@
 
         _trySubmit:function(data){
             var actionSubmit=this._actionSubmit;
-            if(actionSubmit){
-                this._submitAction(data);
-            }else{
-                this._submitToService(data);
-            }
+            if(actionSubmit) this._submitAction(data);
+            else this._submitToService(data);
         },
 
         _submitToService:function(data){
@@ -306,34 +300,42 @@
         },
 
         _onSubmit:function(err,data){
-            var message=(err) ? this.failureMessage : this.successMessage;
-            this._sendNotification(message);
-            (err) ? this._onFailure(err,data) : this._onSuccess(data);
+            if(err && err.statusCode===303 && this.redirectUrl){
+                this._sendNotification(this.redirectMessage);
+                this._onRedirect(this.redirectUrl);
+            }else if(err && err.statusCode===303){
+                this._sendNotification(this.redirectMessage);
+                this._dispatchFailure(err,data);
+            }else if(err) this._onFailure(err,data);
+            else this._onSuccess(data);
         },
 
         _onSuccess:function(data){
+            this._sendNotification(this.successMessage);
             if(this.resetOnSuccess) this._reset();
             var service=this._service;
             var redirectUrl=this.redirectUrl;
-            if(service.onSuccess){
-                service.onSuccess(this,data);
-            }else{
-                if(redirectUrl && redirectUrl !==''){
-                    var location_ = this._locationService;
-                    var delay = this.redirectDelay;
-                    if(location_.href) {
-                        setTimeout(function(){
-                            location_.href=redirectUrl;
-                        },delay);
-                    }
-                }
-            }
+            if(service.onSuccess) service.onSuccess(this,data);
+            else if(redirectUrl && redirectUrl !=='') this._onRedirect(redirectUrl);
         },
 
         _onFailure:function(err,data){
+            this._sendFailureNotification(err,this.failureMessage);
+            this._dispatchFailure(err,data);
+        },
+
+        _dispatchFailure:function(err,data){
             var service=this._service;
-            if(service.onFailure){
-                service.onFailure(this,err,data);
+            if(service.onFailure) service.onFailure(this,err,data);
+        },
+
+        _onRedirect:function(redirectUrl){
+            var location_ = this._locationService;
+            var delay = this.redirectDelay;
+            if(location_.href) {
+                setTimeout(function(){
+                    location_.href=redirectUrl;
+                },delay);
             }
         },
 
@@ -399,9 +401,13 @@
 
         _sendNotification:function(message){
             var service=this._notifyService;
-            if(service)service.show(message);
+            if(service) service.show(message);
         },
 
+        _sendFailureNotification:function(err,message){
+            if(!this.overrideHttpErrorMessage && err.message) this._sendNotification('Error: ' + err.message);
+            else this._sendNotification(message);
+        },
 
         _disableForm:function(){
             var button = this.element.find('button');
