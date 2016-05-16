@@ -95,6 +95,10 @@
                 type:Boolean,
                 value:false
             },
+            redirectPreviousLocation:{
+                type:Boolean,
+                value:false
+            },
             _actionSubmit:{
                 type:Boolean,
                 value:false
@@ -134,7 +138,6 @@
         },
 
         _initForm:function(){
-            this.__events();
             this._setFormElement();
             this._setName();
             this._setMethod();
@@ -144,7 +147,12 @@
             this._setNotificationService();
             this._setLocationService();
             this._setSubmissionType();
-            this._setFormEvents();
+            var self=this;
+            setTimeout(function(){
+                self.__events();
+                self._setFormEvents();
+            },500);
+
         },
 
         __events: function () {
@@ -317,6 +325,7 @@
             var redirectUrl=this.redirectUrl;
             if(service.onSuccess) service.onSuccess(this,data);
             else if(redirectUrl && redirectUrl !=='') this._onRedirect(redirectUrl);
+            else if(this.redirectPreviousLocation) this._redirectToPreviousLocation();
         },
 
         _onFailure:function(err,data){
@@ -339,6 +348,15 @@
             }
         },
 
+        _redirectToPreviousLocation:function(){
+            var location_ = this._locationService;
+            var delay = this.redirectDelay;
+            var referrer;
+            if(location_.referrer) referrer=location_.referrer;
+            else referrer=document.referrer;
+            setTimeout(function() { location_.href=referrer;},delay)
+        },
+
         _onChange:function(event){
             var target=$(event.currentTarget);
             target.removeClass('error');
@@ -346,6 +364,7 @@
 
         _listenerForDelegateCapture:function(){
             this._event($(document),this.submitEvent,this._delegatedCaptureHandler.bind(this));
+            //$(document).on(this.submitEvent,this._delegatedCaptureHandler.bind(this));
         },
 
         _listenerForInternalCapture:function(){
@@ -428,6 +447,9 @@
             }
         },
 
+        _dispose:function(){
+            //$(document).off(this.submitEvent,this._delegatedCaptureHandler.bind(this));
+        },
 
         /**
          * public method to externally submit form
