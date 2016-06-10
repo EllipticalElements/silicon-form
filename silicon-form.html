@@ -364,7 +364,6 @@
 
         _listenerForDelegateCapture:function(){
             this._event($(document),this.submitEvent,this._delegatedCaptureHandler.bind(this));
-            //$(document).on(this.submitEvent,this._delegatedCaptureHandler.bind(this));
         },
 
         _listenerForInternalCapture:function(){
@@ -448,7 +447,7 @@
         },
 
         _dispose:function(){
-            //$(document).off(this.submitEvent,this._delegatedCaptureHandler.bind(this));
+
         },
 
         /**
