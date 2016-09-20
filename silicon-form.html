@@ -99,6 +99,10 @@
                 type:Boolean,
                 value:false
             },
+            disableWarning:{
+                type:Boolean,
+                value:false
+            },
             _actionSubmit:{
                 type:Boolean,
                 value:false
@@ -236,7 +240,7 @@
             var service=this._service;
             if(!service){
                 if(this.action) this._actionSubmit=true;
-                else console.warn('Warning: SILICON-FORM requires either an injected service or an action attribute');
+                else if(!this.disableWarning) console.warn('Warning: SILICON-FORM requires either an injected service or an action attribute');
             }
         },
 
