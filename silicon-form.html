@@ -276,7 +276,6 @@
 
         _submitToService:function(data){
             var service=this._service;
-            console.log(data.body);
             if(!service) return;
             var method=this.method;
             service[method](data.body,this._onSubmit.bind(this));
