@@ -415,9 +415,11 @@
       var self=this;
       var method=this.method;
       var action=this.action;
-      var formData=this._getFormDataObject(data);
+      var formData=data.body;
+      formData=JSON.stringify(formData);
       var request = new XMLHttpRequest();
       request.open(method, action, true);
+      request.setRequestHeader('Content-Type', 'application/json');
       request.onload = function(event) {
         var err=null;
         if (request.status !== 200) {
