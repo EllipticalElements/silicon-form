@@ -380,9 +380,8 @@
         },
 
         _listenerForInternalCapture:function(){
-            var press = this._press();
             var element = this.element;
-            this._event(element, press, 'button', this._capturedSubmitActionHandler.bind(this));
+            this._event(element, 'submit', 'form', this._capturedSubmitActionHandler.bind(this));
         },
 
         _delegatedCaptureHandler:function(event,data){
